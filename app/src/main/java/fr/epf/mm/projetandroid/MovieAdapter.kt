@@ -5,6 +5,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import fr.epf.mm.projetandroid.MainActivity
@@ -13,6 +14,8 @@ import fr.epf.mm.projetandroid.R
 
 class MovieAdapter(private var movies: List<Movie>) : RecyclerView.Adapter<MovieAdapter.MovieViewHolder>() {
     private var onItemClickListener: ((Movie) -> Unit)? = null
+    private var recommendedMovies: List<Movie> = emptyList()
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.movie_item, parent, false)
@@ -39,8 +42,6 @@ class MovieAdapter(private var movies: List<Movie>) : RecyclerView.Adapter<Movie
 
     fun setOnItemClickListener(listener: (Movie) -> Unit) {
         onItemClickListener = listener
-
-
     }
 
     inner class MovieViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -74,18 +75,16 @@ class MovieAdapter(private var movies: List<Movie>) : RecyclerView.Adapter<Movie
 
             favoriteCheckBox.setOnCheckedChangeListener { _, isChecked ->
                 movie.isFavorite = isChecked
-                // Ne mettez pas à jour les films favoris ici
             }
         }
     }
-    fun setData(movies: List<Movie>) {
-        this.movies = movies
+    fun setRecommendedMovies(recommendedMovies: List<Movie>) {
+        this.recommendedMovies = recommendedMovies
         notifyDataSetChanged()
     }
-    //fun setFavoriteMovies(favoriteMovies: List<Movie>) {
-    //    this.favoriteMovies = favoriteMovies
-    //    notifyDataSetChanged()
-    //}
 
+    fun setData(movies: List<Movie>) {
+        this.movies = movies
+    }
 
 }

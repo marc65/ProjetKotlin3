@@ -39,19 +39,31 @@
             android:contentDescription="Favorites"
             android:onClick="showFavorites" />
 
-        <Button
+        <ImageButton
             android:id="@+id/scanButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/qrcodescan"
             android:text="Scanner"
             android:onClick="scanQRCode" />
 
-        <Button
+        <ImageButton
             android:id="@+id/buttonTopRated"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Top Rated"
-            android:layout_marginTop="1dp" />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/top"
+            android:text="Top Rated"/>
+
+        <ImageButton
+            android:id="@+id/popularButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/popular"
+            android:text="Popular" />
+
 
     </LinearLayout>
 

@@ -22,8 +22,9 @@ class FavoriteActivity  : AppCompatActivity() {
 
         val extras = intent.extras
         if (extras != null) {
-            favoriteMovies = extras.getSerializable("favorite_movies") as? List<Movie> ?: emptyList()
+            favoriteMovies = extras.getParcelableArrayList("favorite_movies") ?: emptyList()
             adapter.setData(favoriteMovies)
         }
     }
+
 }

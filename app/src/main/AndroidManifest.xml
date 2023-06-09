@@ -30,7 +30,5 @@
             android:name="fr.epf.mm.projetandroid.FavoriteActivity"
             android:exported="true" />
 
-
-
     </application>
 </manifest>

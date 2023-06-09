@@ -6,11 +6,18 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <ImageView
+        android:id="@+id/posterImageView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/placeholder" />
+
     <TextView
         android:id="@+id/movieTitleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:textAppearanceMedium"
+        android:textAppearance="?android:textAppearanceLarge"
         android:textStyle="bold"
         tools:text="Movie Title" />
 
@@ -18,48 +25,71 @@
         android:id="@+id/originalLanguageTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_marginTop="8dp"
+        tools:textStyle="bold"
         tools:text="Original Language" />
 
     <TextView
         android:id="@+id/overviewTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_marginTop="8dp"
+        tools:textStyle="bold"
         tools:text="Overview" />
 
     <TextView
         android:id="@+id/popularityTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_marginTop="8dp"
+        tools:textStyle="bold"
         tools:text="Popularity" />
 
     <TextView
         android:id="@+id/productionCompaniesTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_marginTop="8dp"
+        tools:textStyle="bold"
         tools:text="Production Companies" />
 
     <TextView
         android:id="@+id/releaseDateTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_marginTop="8dp"
+        tools:textStyle="bold"
         tools:text="Release Date" />
 
     <TextView
         android:id="@+id/durationTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_marginTop="8dp"
+        tools:textStyle="bold"
         tools:text="Duration" />
 
     <TextView
         android:id="@+id/voteAverageTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textAppearance="?android:textAppearanceMedium"
+        android:layout_marginTop="8dp"
+        tools:textStyle="bold"
         tools:text="Vote Average" />
-    <ImageView
-        android:id="@+id/posterImageView"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/placeholder" />
+
+
+<androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:padding="8dp" />
 
 </LinearLayout>

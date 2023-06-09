@@ -1,5 +1,4 @@
 package fr.epf.mm.projetandroid
-//import DetailsFilmActivity
 import MovieAdapter
 import android.content.Context
 import android.content.Intent
@@ -9,14 +8,11 @@ import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.zxing.integration.android.IntentIntegrator
-import fr.epf.mm.projetandroid.ApiManager
-import fr.epf.mm.projetandroid.Movie
-import fr.epf.mm.projetandroid.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -33,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adapter: MovieAdapter
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -46,16 +43,20 @@ class MainActivity : AppCompatActivity() {
             val query = editTextSearch.text.toString()
             searchMovies(query)
         }
-        val buttonTopRated = findViewById<Button>(R.id.buttonTopRated)
+        val buttonTopRated = findViewById<ImageButton>(R.id.buttonTopRated)
         buttonTopRated.setOnClickListener {
             getTopRatedMovies()
         }
-
-        //updateFavoriteMovies()
+        val PopularButton = findViewById<ImageButton>(R.id.popularButton)
+        PopularButton.setOnClickListener {
+            GlobalScope.launch {
+                getPopularMovies()
+            }
+        }
     }
 
     private fun searchMovies(query: String) {
-        val apiKey = "0b96ae7ab4d6f3ff74468ec58e787def" // Votre clé API TMDB
+        val apiKey = "0b96ae7ab4d6f3ff74468ec58e787def"
         val service = ApiManager.tmdbApiService
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -69,15 +70,11 @@ class MainActivity : AppCompatActivity() {
                             showMovies(movies)
                         }
                     } else {
-                        // Gérer le cas où la liste de films est null
                     }
                 } else {
-                    // Gérer les erreurs de la requête
                     val errorMessage = response.message()
-                    // Afficher ou traiter l'erreur
                 }
             } catch (e: Exception) {
-                // Gérer les exceptions
                 e.printStackTrace()
             }
         }
@@ -99,15 +96,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showFavorites(view: View) {
-        //val favoriteMovies = movies.filter { it.isFavorite }
-
-        //val favoriteMovies = intent.getSerializableExtra("favorite_movies") as? ArrayList<Movie>
-        //val intent = Intent(this, FavoriteActivity::class.java)
-        //intent.getSerializableExtra("favorite_movies") as? ArrayList<Movie>
-        //startActivity(intent)
-
         val intent = Intent(this, FavoriteActivity::class.java)
-        intent.putExtra("favorite_movies", ArrayList(favoriteMovies))
+        intent.putParcelableArrayListExtra("favorite_movies", ArrayList(favoriteMovies))
         startActivity(intent)
 
     }
@@ -116,17 +106,16 @@ class MainActivity : AppCompatActivity() {
         favoriteMovies.clear()
         favoriteMovies.addAll(movies.filter { it.isFavorite })
 
-        // Mettre à jour la liste des films favoris dans le thread principal
         handler.post {
             adapter.notifyDataSetChanged()
             saveFavorites()
         }
     }
     private fun saveFavorites() {
-        val favoriteIds = favoriteMovies.map { it.id } // Récupérer les identifiants des films favoris
+        val favoriteIds = favoriteMovies.map { it.id }
         val sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putStringSet("favoriteIds", favoriteIds.map { it.toString() }.toSet()) // Enregistrer les identifiants dans les préférences partagées
+        editor.putStringSet("favoriteIds", favoriteIds.map { it.toString() }.toSet())
         editor.apply()
     }
     private fun loadFavorites() {
@@ -141,11 +130,11 @@ class MainActivity : AppCompatActivity() {
 
     fun scanQRCode(view: View) {
         val integrator = IntentIntegrator(this)
-        integrator.setOrientationLocked(false) // Débloque la rotation de l'écran
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE) // Spécifie le format de code QR à numériser
-        integrator.setPrompt("Scannez un code QR") // Définit le message d'invite pour l'utilisateur
-        integrator.setCameraId(0) // Utilise la caméra arrière par défaut
-        integrator.initiateScan() // Lance la numérisation du code QR
+        integrator.setOrientationLocked(false)
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
+        integrator.setPrompt("Scannez un code QR")
+        integrator.setCameraId(0)
+        integrator.initiateScan()
      }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -176,19 +165,63 @@ class MainActivity : AppCompatActivity() {
                             showMovies(topRatedMovies)
                         }
                     } else {
-                        // Gérer le cas où la liste de films est null
                     }
                 } else {
-                    // Gérer les erreurs de la requête
                     val errorMessage = response.message()
-                    // Afficher ou traiter l'erreur
                 }
             } catch (e: Exception) {
-                // Gérer les exceptions
                 e.printStackTrace()
             }
         }
     }
+    private fun getPopularMovies() {
+        val apiKey = "0b96ae7ab4d6f3ff74468ec58e787def"
+        val service = ApiManager.tmdbApiService
+
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val response = service.getPopularMovies(apiKey, 1)
+                if (response.isSuccessful) {
+                    val PopularMovies = response.body()?.results
+                    if (PopularMovies != null) {
+                        withContext(Dispatchers.Main) {
+                            showMovies(PopularMovies)
+                        }
+                    } else {
+                    }
+                } else {
+                    val errorMessage = response.message()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun getRecommendedMovies() {
+        val apiKey = "0b96ae7ab4d6f3ff74468ec58e787def"
+        val service = ApiManager.tmdbApiService
+
+        GlobalScope.launch(Dispatchers.IO) {
+            try {
+                val response = service.getPopularMovies(apiKey, 1)
+                if (response.isSuccessful) {
+                    val PopularMovies = response.body()?.results
+                    if (PopularMovies != null) {
+                        withContext(Dispatchers.Main) {
+                            showMovies(PopularMovies)
+                        }
+                    } else {
+                    }
+                } else {
+                    val errorMessage = response.message()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 
 
 }

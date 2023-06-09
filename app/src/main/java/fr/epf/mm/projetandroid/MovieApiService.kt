@@ -22,4 +22,23 @@ interface TmdbApiService {
         @Query("api_key") apiKey: String
     ): Response<SearchResult>
 
+    @GET("discover/movie")
+    suspend fun getMoviesByGenre(
+        @Query("api_key") apiKey: String,
+        @Query("with_genres") genreId: Int
+    ): Response<SearchResult>
+
+    @GET("movie/{movie_id}/recommendations")
+    fun getRecommendedMovies(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String
+    ): Response<SearchResult>
+
+    @GET("movie/popular")
+    suspend fun getPopularMovies(
+        @Query("api_key") apiKey: String,
+        @Query("page") page: Int
+    ): Response<SearchResult>
+
+
 }

@@ -16,4 +16,12 @@ object ApiManager {
     val tmdbApiService: TmdbApiService by lazy {
         retrofit.create(TmdbApiService::class.java)
     }
+    fun create(): TmdbApiService {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        return retrofit.create(TmdbApiService::class.java)
+    }
 }

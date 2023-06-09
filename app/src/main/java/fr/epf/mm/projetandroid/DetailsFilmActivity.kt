@@ -1,17 +1,21 @@
 package fr.epf.mm.projetandroid
+import MovieAdapter
+import SearchResult
+import TmdbApiService
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import fr.epf.mm.projetandroid.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import fr.epf.mm.projetandroid.ApiManager
-import fr.epf.mm.projetandroid.Movie
-
+import retrofit2.Response
 
 class DetailsFilmActivity : AppCompatActivity() {
 
@@ -24,6 +28,10 @@ class DetailsFilmActivity : AppCompatActivity() {
     private lateinit var durationTextView: TextView
     private lateinit var voteAverageTextView: TextView
     private lateinit var posterImageView: ImageView
+    private lateinit var recommendedMoviesRecyclerView: RecyclerView
+    private lateinit var recommendedMoviesAdapter: MovieAdapter
+    val movieService: TmdbApiService = ApiManager.create()
+    private var recommendedMovies: List<Movie> = emptyList()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,45 +48,20 @@ class DetailsFilmActivity : AppCompatActivity() {
         voteAverageTextView = findViewById(R.id.voteAverageTextView)
         posterImageView = findViewById(R.id.posterImageView)
 
-        /*val movieId = intent.getStringExtra("movie_id")
-        if (!movieId.isNullOrEmpty()) {
-            fetchMovieDetails(movieId.toInt())
-        } else {
-            // Gérer le cas où l'ID du film n'est pas valide
-        }
-
         val movieId = intent.getIntExtra("movie_id", -1)
         if (movieId != -1) {
             fetchMovieDetails(movieId)
-        } else {
-            // Gérer le cas où l'ID du film n'est pas valide
-        }
-
-        val movieId = intent.getStringExtra("movie_id")
-        if (!movieId.isNullOrEmpty()) {
-            fetchMovieDetails(movieId.toInt())
-        } else {
-            val movie = intent.getParcelableExtra<Movie>("movie")
-            if (movie != null) {
-                fetchMovieDetails(movie.id)
-            } else {
-                // Gérer le cas où l'ID du film n'est pas valide et où l'objet Movie est nul
+            GlobalScope.launch(Dispatchers.Main) {
+                fetchRecommendedMovies(movieId)
             }
-        }*/
-
-        val movieId = intent.getIntExtra("movie_id", -1)
-        if (movieId != -1) {
-            fetchMovieDetails(movieId)
         } else {
-            // Gérer le cas où l'ID du film n'est pas valide
         }
-
 
 
     }
 
     private fun fetchMovieDetails(movieId: Int) {
-        val apiKey = "0b96ae7ab4d6f3ff74468ec58e787def" // Votre clé API TMDB
+        val apiKey = "0b96ae7ab4d6f3ff74468ec58e787def"
         val service = ApiManager.tmdbApiService
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -91,15 +74,11 @@ class DetailsFilmActivity : AppCompatActivity() {
                             showMovieDetails(movie)
                         }
                     } else {
-                        // Gérer le cas où les détails du film sont null
                     }
                 } else {
-                    // Gérer les erreurs de la requête
                     val errorMessage = response.message()
-                    // Afficher ou traiter l'erreur
                 }
             } catch (e: Exception) {
-                // Gérer les exceptions
                 e.printStackTrace()
             }
         }
@@ -123,9 +102,9 @@ class DetailsFilmActivity : AppCompatActivity() {
                 .placeholder(R.drawable.placeholder)
                 .into(posterImageView)
         } else {
-            // Utilisez une image de remplacement si le chemin de l'affiche est indisponible
             posterImageView.setImageResource(R.drawable.placeholder)
         }
+        showRecommendedMovies(recommendedMovies)
     }
     private fun getProductionCompaniesString(companies: List<Map<String, String>>): String {
         val stringBuilder = StringBuilder()
@@ -140,6 +119,36 @@ class DetailsFilmActivity : AppCompatActivity() {
             stringBuilder.deleteCharAt(stringBuilder.length - 2)
         }
         return stringBuilder.toString()
+    }
+
+    private fun showRecommendedMovies(recommendedMovies: List<Movie>) {
+        /*if (::recommendedMoviesAdapter.isInitialized) {
+            recommendedMoviesAdapter.setData(recommendedMovies)
+            recommendedMoviesAdapter.notifyDataSetChanged()
+        }*/
+
+        this.recommendedMovies = recommendedMovies
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recommendedMoviesAdapter = MovieAdapter(recommendedMovies)
+        recyclerView.adapter = recommendedMoviesAdapter
+    }
+    private suspend fun fetchRecommendedMovies(movieId: Int) {
+        try {
+            val response: Response<SearchResult> = withContext(Dispatchers.IO) {
+                movieService.getRecommendedMovies(movieId, "0b96ae7ab4d6f3ff74468ec58e787def")
+            }
+
+            if (response.isSuccessful) {
+                val movieResponse = response.body()
+                if (movieResponse != null) {
+                    val recommendedMovies = movieResponse.results
+                    showRecommendedMovies(recommendedMovies)
+                }
+            } else {
+            }
+        } catch (e: Exception) {
+        }
     }
 
 }

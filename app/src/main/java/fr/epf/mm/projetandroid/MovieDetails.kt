@@ -17,7 +17,9 @@ data class MovieDetails(
     @SerializedName("vote_average")
     val voteAverage: Float,
     @SerializedName("belongs_to_collection")
-    val collection: Collection?
+    val collection: Collection?,
+    //@SerializedName("genre_ids")
+    //val genreIds: List<Int>?
     ){
     data class Collection(
         val id: Int,
