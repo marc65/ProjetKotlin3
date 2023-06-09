@@ -78,10 +78,6 @@ class MovieAdapter(private var movies: List<Movie>) : RecyclerView.Adapter<Movie
             }
         }
     }
-    fun setRecommendedMovies(recommendedMovies: List<Movie>) {
-        this.recommendedMovies = recommendedMovies
-        notifyDataSetChanged()
-    }
 
     fun setData(movies: List<Movie>) {
         this.movies = movies

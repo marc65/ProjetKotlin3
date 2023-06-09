@@ -1,5 +1,6 @@
 package fr.epf.mm.projetandroid
 import TmdbApiService
+import com.google.android.gms.common.api.ApiException
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -24,4 +25,14 @@ object ApiManager {
 
         return retrofit.create(TmdbApiService::class.java)
     }
+    suspend fun getRecommendedMovies(movieId: Int, apiKey: String): List<Movie> {
+        val service = tmdbApiService
+        val response = service.getRecommendedMovies(movieId, apiKey)
+        if (response.isSuccessful) {
+            return response.body()?.results ?: emptyList()
+        } else {
+            throw ApiException("Failed to fetch recommended movies")
+        }
+    }
+
 }
